@@ -5,7 +5,7 @@ import { RolesGuard } from './roles.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { SearchUserParams } from "../User/user.interface";
 
-@Controller('admin/users')
+@Controller(['admin/users', 'manager/users'])
 @UseGuards(RolesGuard)
 export class AdminController {
     constructor(private readonly userService: UserService) {}
