@@ -4,7 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from "./User/user.module";
 import { RolesManagementModule } from "./RolesManagement/roles.module";
-import { AuthModule } from "./auth/auth.module";
+import { AuthModule } from "./Auth/auth.module";
 
 @Module({
   imports: [

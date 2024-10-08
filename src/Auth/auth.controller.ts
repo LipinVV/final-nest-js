@@ -21,6 +21,18 @@ export class AuthController {
     return this.authService.register(createUserDto, 'client');
   }
 
+  @HttpCode(HttpStatus.CREATED)
+  @Post('admin/register')
+  async registerAdmin(@Body() createUserDto: UserDto) {
+    return this.authService.register(createUserDto, 'admin');
+  }
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post('manager/register')
+  async registerManager(@Body() createUserDto: UserDto) {
+    return this.authService.register(createUserDto, 'manager');
+  }
+
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() body: { email: string; password: string }, @Res({ passthrough: true }) response: Response) {
