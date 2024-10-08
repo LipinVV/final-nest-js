@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
 
@@ -9,16 +9,19 @@ export class User {
     email: string;
 
     @Prop({ required: true })
-    passwordHash: string;
+    password: string;
 
     @Prop({ required: true })
     name: string;
 
+    @Prop({ required: true, enum: ['client', 'admin', 'manager'], default: 'client' })
+    role: string;
+
     @Prop()
     contactPhone?: string;
 
-    @Prop({ required: true, enum: ['client', 'admin', 'manager'], default: 'client' })
-    role: string;
+    @Prop()
+    salt?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
