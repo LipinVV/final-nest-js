@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Query, UseGuards, Request, ForbiddenException } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, UseGuards, Request } from '@nestjs/common';
 import { UserService } from "../User/user.service";
 import { Roles } from './roles.decorator';
 import { RolesGuard } from './roles.guard';
@@ -23,6 +23,7 @@ export class AdminController {
             role: newUser.role,
         };
     }
+
     @Get()
     @Roles('admin', 'manager')
     async getUsers(@Query() params: SearchUserParams, @Request() req) {

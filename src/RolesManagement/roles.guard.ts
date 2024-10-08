@@ -11,7 +11,9 @@ export class RolesGuard implements CanActivate {
         const requiredRoles = this.reflector.get<string[]>('roles', context.getHandler());
         if (!requiredRoles) return true;
 
-        const jwtToken = context.switchToHttp().getRequest().headers['cookie'].slice(4, -1);
+        const jwtCookie = context.switchToHttp().getRequest().headers['cookie'];
+        if(!jwtCookie) throw new ForbiddenException('Unauthorized');
+        const jwtToken = jwtCookie.slice(4, -1);
         const user = jwtDecoder.decode(jwtToken);
         if (!user) throw new ForbiddenException('Unauthorized');
 

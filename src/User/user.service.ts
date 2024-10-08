@@ -23,7 +23,6 @@ export class UserService implements IUserService {
 
     async findAll(params: SearchUserParams): Promise<User[]> {
         const { limit, offset, email, name, contactPhone } = params;
-
         const filter: Record<string, any> = {};
         if (email) filter.email = new RegExp(email, 'i');
         if (name) filter.name = new RegExp(name, 'i');
