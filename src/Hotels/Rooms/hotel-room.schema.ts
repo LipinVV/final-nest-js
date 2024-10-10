@@ -15,7 +15,7 @@ export interface HotelRoom extends Document {
         title: string;
         description: string;
     }
-    description?: string;
+    description: string;
     images: string[];
     isEnabled: boolean;
     readonly createdAt: Date;

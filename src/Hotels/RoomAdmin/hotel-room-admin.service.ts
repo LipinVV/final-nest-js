@@ -39,11 +39,13 @@ export class AdminHotelRoomService {
     }
 
     async updateHotelRoom(
-        roomId: string,
+        roomId: any,
         updateHotelRoomDto: UpdateHotelRoomDto,
         images: any,
     ): Promise<HotelRoom> {
         const existingRoom = await this.hotelRoomModel.findById(roomId) as HotelRoom;
+        const existingHotel = await this.hotelModel.findById(updateHotelRoomDto.hotelId) as Hotel;
+
         if (!existingRoom) {
             throw new Error('Hotel room not found');
         }
@@ -53,9 +55,21 @@ export class AdminHotelRoomService {
         existingRoom.isEnabled = updateHotelRoomDto.isEnabled;
 
         existingRoom.images = [
-            ...new Set([...updateHotelRoomDto.images, ...imagePaths]),
+            ...new Set([...existingRoom.images, ...imagePaths]),
         ];
 
-        return existingRoom.save();
+        const result = await existingRoom.save();
+
+        return {
+            id: result._id,
+            description: result.description,
+            images: result.images,
+            isEnabled: result.isEnabled,
+            hotel: {
+                id: existingHotel._id,
+                title: existingHotel.title,
+                description: existingHotel.description,
+            },
+        } as any;
     }
 }

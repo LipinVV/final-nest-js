@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 const jwtDecoder = require('jsonwebtoken');
@@ -12,10 +12,10 @@ export class RolesGuard implements CanActivate {
         if (!requiredRoles) return true;
 
         const jwtCookie = context.switchToHttp().getRequest().headers['cookie'];
-        if(!jwtCookie) throw new ForbiddenException('Unauthorized');
+        if(!jwtCookie) throw new UnauthorizedException('Unauthorized');
         const jwtToken = jwtCookie.slice(4, -1);
         const user = jwtDecoder.decode(jwtToken);
-        if (!user) throw new ForbiddenException('Unauthorized');
+        if (!user) throw new UnauthorizedException('Unauthorized');
 
         const hasRole = requiredRoles.includes(user.role);
         if (!hasRole) throw new ForbiddenException('Insufficient permissions');

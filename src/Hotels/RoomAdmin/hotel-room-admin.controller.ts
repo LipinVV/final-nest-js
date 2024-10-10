@@ -5,7 +5,7 @@ import {
     Body,
     Param,
     UseInterceptors,
-    UploadedFiles,
+    UploadedFiles, UseGuards,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -13,6 +13,8 @@ import { AdminHotelRoomService } from "./hotel-room-admin.service";
 import { CreateHotelRoomDto } from "./dto/create-hotel-room.dto";
 import { UpdateHotelRoomDto } from "./dto/update-hotel-room.dto";
 import * as path from 'path';
+import { Roles } from "../../RolesManagement/roles.decorator";
+import { RolesGuard } from "../../RolesManagement/roles.guard";
 
 const storage = diskStorage({
     destination: './uploads',
@@ -25,11 +27,13 @@ const storage = diskStorage({
 });
 
 @Controller('admin/hotel-rooms')
+@UseGuards(RolesGuard)
 export class AdminHotelRoomController {
     constructor(private readonly adminHotelRoomService: AdminHotelRoomService) {}
 
     @Post()
     @UseInterceptors(FilesInterceptor('images', 10, { storage }) as any)
+    @Roles('admin')
     async createHotelRoom(
         @Body() createHotelRoomDto: CreateHotelRoomDto,
         @UploadedFiles() images: string[],
@@ -39,6 +43,7 @@ export class AdminHotelRoomController {
 
     @Put('/:id')
     @UseInterceptors(FilesInterceptor('images', 10, { storage }) as any)
+    @Roles('admin')
     async updateHotelRoom(
         @Param('id') id: string,
         @Body() updateHotelRoomDto: UpdateHotelRoomDto,
