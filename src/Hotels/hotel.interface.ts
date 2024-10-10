@@ -1,5 +1,5 @@
 import { Hotel } from "./hotel.schema";
-import { HotelRoom } from "./hotel-room.schema";
+import { HotelRoom } from "./Rooms/hotel-room.schema";
 
 interface SearchHotelParams {
     limit: number;
