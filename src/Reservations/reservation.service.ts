@@ -69,14 +69,14 @@ export class ReservationService {
         }
         const result = await this.reservationModel.findByIdAndDelete(id);
         if (!result) {
-            throw new BadRequestException(`There is no room with such ID: ${id}`);
+            throw new BadRequestException(`There is no reservation with such ID: ${id}`);
         }
     }
 
-    async getManagerReservations(userId: string) {
-        return this.reservationModel.find({ userId })
-            .populate('hotelId', 'title description')
-            .populate('roomId', 'description images')
-            .exec();
+    async deleteReservationAsManager(id: string) {
+        const result = await this.reservationModel.findByIdAndDelete(id);
+        if (!result) {
+            throw new BadRequestException(`There is no reservation with such ID: ${id}`);
+        }
     }
 }

@@ -9,15 +9,14 @@ export class ManagerReservationController {
     constructor(private readonly reservationsService: ReservationService) {}
 
     @Get(':userId')
-    //     @Roles('manager')
+    @Roles('manager')
     async getUserReservations(@Param('userId') userId: string) {
-        return this.reservationsService.getManagerReservations(userId);
+        return this.reservationsService.getUserReservations(userId);
     }
 
-    @Delete(':id')
-    //     @Roles('manager')
-    async cancelReservation(@Param('id') id: string, @Req() req) {
-        const userId = req.user._doc._id.toString();
-        return this.reservationsService.deleteReservation(id, userId);
+    @Delete(':reservationId')
+    @Roles('manager')
+    async cancelReservation(@Param('reservationId') reservationId: string) {
+        return this.reservationsService.deleteReservationAsManager(reservationId);
     }
 }

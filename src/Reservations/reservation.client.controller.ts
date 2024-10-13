@@ -30,7 +30,6 @@ export class ClientReservationController {
     @Get()
     @Roles('client')
     async getReservations(@Req() req) {
-        console.log('*', req.user._doc)
         const userId = req.user._doc._id.toString();
         return this.reservationsService.getUserReservations(userId);
     }
@@ -39,7 +38,6 @@ export class ClientReservationController {
     @Roles('client')
     async cancelReservation(@Param('id') id: string, @Req() req) {
         const userId = req.user._doc._id.toString();
-
         return this.reservationsService.deleteReservation(id, userId);
     }
 }
