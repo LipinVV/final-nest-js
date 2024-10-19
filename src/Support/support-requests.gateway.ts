@@ -1,3 +1,5 @@
+// скорее всего очередные конфликты с Docker, надо разбираться
+
 // import {
 //     WebSocketGateway,
 //     WebSocketServer,
