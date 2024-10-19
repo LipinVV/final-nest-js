@@ -1,15 +1,14 @@
-## Description
+## Описание:
 
-Final project.
+Финальный проект
 
-## Project setup
+## Скачав проект, установите зависимости
 
 ```bash
 $ npm install
 ```
 
-## Compile and run the project
+## Запустить проект можно этой командой. Убедитесь, что у Вас есть Docker / MongoDB
 
 ```bash
-# development
 $ docker-compose up --build

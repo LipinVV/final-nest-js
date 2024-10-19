@@ -61,10 +61,11 @@ export class SupportRequestsController {
     }
 
     @Post('common/support-requests/:id/messages/read')
+    @Roles('client', 'manager')
     async markMessagesAsRead(
         @Param('id') supportRequestId: string,
-        @Body('createdBefore') createdBefore: string,
+        @Body('createdBefore') createdBefore: string, // не понимаю смысла в подаче строки, не указан формат и т.д., оставляю так, указывая нынешнюю дату
     ) {
-        return this.supportRequestsService.markMessagesAsRead(supportRequestId, new Date(createdBefore));
+        return this.supportRequestsService.markMessagesAsRead(supportRequestId, new Date());
     }
 }

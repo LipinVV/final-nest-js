@@ -81,17 +81,24 @@ export class SupportRequestsService {
         }));
     }
 
-    // Получение всех сообщений по чату
     async getMessagesBySupportRequestId(supportRequestId: string, authorId: string): Promise<Message[]> {
         const supportRequest = await this.supportRequestModel.findById(supportRequestId).exec() as any;
 
         if (!supportRequest || supportRequest.user.toString() !== authorId) {
             throw new NotFoundException('Support request not found');
         }
-        return supportRequest.messages;
+        return supportRequest.messages.map((message: any) => ({
+            id: message._id.toString(),
+            createdAt: message.sentAt.toISOString(),
+            text: message.text,
+            readAt: message.readAt,
+            author: {
+                id: message.author.toString(),
+                name: supportRequest.user.name
+            }
+        }));
     }
 
-    // Отправка сообщения в чат
     async sendMessageToSupportRequest(
         supportRequestId: string,
         authorId: string,
@@ -121,7 +128,7 @@ export class SupportRequestsService {
             id: newMessage._id.toString(),
             createdAt: newMessage.sentAt.toISOString(),
             text: newMessage.text,
-            readAt: 'no data',
+            readAt: 'not read',
             author: {
                 id: supportRequest.user._id.toString(),
                 name: supportRequest.user.name,
@@ -129,7 +136,6 @@ export class SupportRequestsService {
         } as any;
     }
 
-    // Пометка сообщений как прочитанных
     async markMessagesAsRead(supportRequestId: string, readBefore: Date): Promise<{ success: true }> {
         const supportRequest = await this.supportRequestModel.findById(supportRequestId).exec() as any;
         if (!supportRequest) {
@@ -142,7 +148,7 @@ export class SupportRequestsService {
             }
             return message;
         });
-
+        console.log(supportRequest)
         await supportRequest.save();
         return { success: true };
     }
