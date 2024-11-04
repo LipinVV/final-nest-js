@@ -1,23 +1,49 @@
-// скорее всего очередные конфликты с Docker, надо разбираться
+import {
+    WebSocketGateway,
+    SubscribeMessage,
+    WebSocketServer,
+    OnGatewayConnection,
+    OnGatewayDisconnect,
+} from '@nestjs/websockets';
+import { Server } from 'socket.io';
+import { Message } from './support-request.schema';
 
-// import {
-//     WebSocketGateway,
-//     WebSocketServer,
-//     SubscribeMessage,
-//     MessageBody,
-// } from '@nestjs/websockets';
-// import { SupportRequestsService } from './support-requests.service';
-// import { Server } from 'socket.io';
+interface IClient {
+    id: string,
+    name: string,
+    join: (is: string) => void
+}
 
-//@WebSocketGateway()
-export class SupportRequestsGateway {
-    // @WebSocketServer() server: Server;
-    //
-    // constructor(private readonly supportRequestsService: SupportRequestsService) {}
+@WebSocketGateway()
+export class SupportRequestGateway implements OnGatewayConnection, OnGatewayDisconnect {
+    @WebSocketServer() server: Server;
 
-    // @SubscribeMessage('subscribeToChat')
-    // async handleChatSubscription(@MessageBody('chatId') chatId: string) {
-    //     const messages = await this.supportRequestsService.getMessagesBySupportRequestId(chatId) as any;
-    //     this.server.emit('chatMessages', messages);
-    // }
+    handleConnection(client: IClient) {
+        console.log('Client connected:', client.id);
+    }
+
+    handleDisconnect(client: IClient) {
+        console.log('Client disconnected:', client.id);
+    }
+
+    @SubscribeMessage('subscribeToChat')
+    async handleSubscribeToChat(client: IClient, payload: { chatId: string }) {
+        client.join(payload.chatId);
+        console.log(`Client ${client.id} subscribed to chat ${payload.chatId}`);
+    }
+
+    public async sendMessage(chatId: string, message: Message) {
+        if (typeof message.author !== "string") {
+            this.server.to(chatId).emit('message', {
+                id: message._id.toString(),
+                createdAt: message.sentAt.toISOString(),
+                text: message.text,
+                readAt: message.readAt,
+                author: {
+                    id: message.author.toString(),
+                    name: message.author.name,
+                },
+            });
+        }
+    }
 }

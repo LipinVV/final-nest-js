@@ -2,12 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { SupportRequest, Message, IFormattedSupportRequest } from "./support-request.schema";
+import { SupportRequestGateway } from "./support-requests.gateway";
 
 @Injectable()
 export class SupportRequestsService {
     constructor(
         @InjectModel('SupportRequest')
         private readonly supportRequestModel: Model<SupportRequest>,
+        private readonly supportRequestGateway: SupportRequestGateway,
     ) {}
 
     async createSupportRequest(userId: string, text: string): Promise<SupportRequest> {
@@ -123,6 +125,8 @@ export class SupportRequestsService {
 
         supportRequest.messages.push(newMessage);
         await supportRequest.save();
+
+        await this.supportRequestGateway.sendMessage(supportRequestId, newMessage);
 
         return {
             id: newMessage._id.toString(),

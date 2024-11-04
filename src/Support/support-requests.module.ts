@@ -4,6 +4,7 @@ import { SupportRequestsController } from "./support-requests.controller";
 import { SupportRequestsService } from "./support-requests.service";
 import { SupportRequestSchema } from "./support-request.schema";
 import { MessageSchema } from "./support-request.schema";
+import { SupportRequestGateway } from "./support-requests.gateway";
 
 @Module({
     imports: [
@@ -13,6 +14,6 @@ import { MessageSchema } from "./support-request.schema";
         ]),
     ],
     controllers: [SupportRequestsController],
-    providers: [SupportRequestsService],
+    providers: [SupportRequestsService, SupportRequestGateway],
 })
 export class SupportRequestsModule {}

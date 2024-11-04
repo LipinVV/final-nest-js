@@ -2,7 +2,7 @@ import { Schema, Document, Types } from 'mongoose';
 
 interface Message {
     _id: Types.ObjectId;
-    author: string;
+    author: string | { name: string };
     sentAt: Date;
     text: string;
     readAt?: Date;
