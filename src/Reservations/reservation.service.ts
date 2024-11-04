@@ -1,14 +1,15 @@
-import {BadRequestException, ForbiddenException, Injectable} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateReservationDto } from "./dto/reservation.dto";
 import { Hotel } from "../Hotels/hotel.schema";
 import { HotelRoom } from "../Hotels/Rooms/hotel-room.schema";
+import { ReservationResponseDto } from "./reservation.interface";
 
 @Injectable()
 export class ReservationService {
     constructor(
-        @InjectModel('Reservation') private readonly reservationModel: Model<any>,
+        @InjectModel('Reservation') private readonly reservationModel: Model<ReservationResponseDto>,
         @InjectModel('HotelRoom') private readonly hotelRoomModel: Model<HotelRoom>,
         @InjectModel('Hotel') private readonly hotelModel: Model<Hotel>,
     ) {}
@@ -16,7 +17,7 @@ export class ReservationService {
     async addReservation(userId: string, createReservationDto: CreateReservationDto) {
         const { hotelRoom, startDate, endDate } = createReservationDto;
 
-        const existingRoom = await this.hotelRoomModel.findById(hotelRoom) as any;
+        const existingRoom = await this.hotelRoomModel.findById(hotelRoom) as HotelRoom;
 
         if(!existingRoom) {
             throw new BadRequestException(`There is no room with such ID: ${hotelRoom}`);
@@ -28,7 +29,7 @@ export class ReservationService {
         }
 
         const relatedHotelId = existingRoom.hotel.toString();
-        const relatedHotel = await this.hotelModel.findById(relatedHotelId) as any;
+        const relatedHotel = await this.hotelModel.findById(relatedHotelId) as Hotel;
 
         const hotelPart = {
             title: relatedHotel.title,

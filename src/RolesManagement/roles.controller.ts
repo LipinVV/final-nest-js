@@ -12,7 +12,7 @@ export class AdminController {
 
     @Post()
     @Roles('admin')
-    async createUser(@Body() createUserDto: CreateUserDto, @Request() req) {
+    async createUser(@Body() createUserDto: CreateUserDto, @Request() req: Request) {
         const newUser = await this.userService.create(createUserDto) as IUser;
 
         return {
@@ -26,7 +26,7 @@ export class AdminController {
 
     @Get()
     @Roles('admin', 'manager')
-    async getUsers(@Query() params: SearchUserParams, @Request() req) {
+    async getUsers(@Query() params: SearchUserParams, @Request() req: Request) {
         const users = await this.userService.findAll(params);
         return users.map((user: IUser) => ({
             id: user._id,

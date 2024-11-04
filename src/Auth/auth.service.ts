@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../User/user.service';
 import { UserDto } from "./dto/user.dto";
 import { randomBytes, pbkdf2Sync } from 'crypto';
+import { IUser } from "../User/user.interface";
 
 @Injectable()
 export class AuthService {
@@ -27,7 +28,7 @@ export class AuthService {
     const salt = this.generateSalt();
     createUserDto.password = this.hashPassword(createUserDto.password, salt);
 
-    const user = await this.userService.create({ ...createUserDto, role, salt } as any) as any;
+    const user = await this.userService.create({ ...createUserDto, role, salt } as IUser) as IUser;
 
     return {
       id: user._id,

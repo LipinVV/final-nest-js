@@ -9,11 +9,11 @@ interface SearchUserParams {
 }
 
 interface IUser {
-    _id?: string;
     email: string;
     password: string;
     name: string;
     role: string;
+    _id?: string;
     contactPhone?: string;
     salt?: string;
 }
