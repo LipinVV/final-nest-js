@@ -8,7 +8,7 @@ export const HotelRoomSchema = new Schema({
     isEnabled: { type: Boolean, default: true },
 });
 
-export interface HotelRoom extends Document {
+interface HotelRoom extends Document {
     readonly id: string;
     hotel: {
         id: Types.ObjectId;
@@ -16,8 +16,10 @@ export interface HotelRoom extends Document {
         description: string;
     }
     description: string;
-    images: string[];
+    images: { filename: string }[];
     isEnabled: boolean;
     readonly createdAt: Date;
     readonly updatedAt: Date;
 }
+
+export { HotelRoom }

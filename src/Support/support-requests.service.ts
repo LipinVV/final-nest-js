@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { SupportRequest, Message } from "./support-request.schema";
+import { SupportRequest, Message, IFormattedSupportRequest } from "./support-request.schema";
 
 @Injectable()
 export class SupportRequestsService {
@@ -17,14 +17,14 @@ export class SupportRequestsService {
             isActive: true,
             hasNewMessages: true,
         });
-        const completedRequest = await newRequest.save() as any;
+        const completedRequest = await newRequest.save();
 
         return {
             id: completedRequest._id,
             createdAt: completedRequest.createdAt,
             hasNewMessages: completedRequest.hasNewMessages,
             isActive: completedRequest.isActive,
-        } as any;
+        } as SupportRequest;
     }
 
     async getClientSupportRequests(
@@ -33,7 +33,7 @@ export class SupportRequestsService {
         offset: number,
         isActive?: boolean,
     ): Promise<SupportRequest[]> {
-        const query: any = { user: userId };
+        const query: { user: string, isActive?: boolean } = { user: userId };
         if (isActive !== undefined) {
             query.isActive = isActive;
         }
@@ -41,22 +41,22 @@ export class SupportRequestsService {
             .find(query)
             .skip(offset)
             .limit(limit)
-            .exec() as any;
+            .exec();
 
         return supportRequests.map((request) => ({
             id: request._id.toString(),
             createdAt: request.createdAt.toISOString(),
             isActive: request.isActive,
             hasNewMessages: request.hasNewMessages,
-        }));
+        })) as unknown as SupportRequest[];
     }
 
     async getManagerSupportRequests(
         limit: number,
         offset: number,
         isActive?: boolean,
-    ): Promise<SupportRequest[]> {
-        const query: any = {};
+    ): Promise<IFormattedSupportRequest[]> {
+        const query: { isActive?: boolean } = {};
         if (isActive !== undefined) {
             query.isActive = isActive;
         }
@@ -65,7 +65,7 @@ export class SupportRequestsService {
             .populate('user', 'name email contactPhone')
             .skip(offset)
             .limit(limit)
-            .exec() as any;
+            .exec();
 
         return supportRequests.map((request) => ({
             id: request._id.toString(),
@@ -82,12 +82,12 @@ export class SupportRequestsService {
     }
 
     async getMessagesBySupportRequestId(supportRequestId: string, authorId: string): Promise<Message[]> {
-        const supportRequest = await this.supportRequestModel.findById(supportRequestId).exec() as any;
+        const supportRequest = await this.supportRequestModel.findById(supportRequestId).exec();
 
         if (!supportRequest || supportRequest.user.toString() !== authorId) {
             throw new NotFoundException('Support request not found');
         }
-        return supportRequest.messages.map((message: any) => ({
+        return supportRequest.messages.map((message) => ({
             id: message._id.toString(),
             createdAt: message.sentAt.toISOString(),
             text: message.text,
@@ -96,7 +96,7 @@ export class SupportRequestsService {
                 id: message.author.toString(),
                 name: supportRequest.user.name
             }
-        }));
+        })) as unknown as Message[];
     }
 
     async sendMessageToSupportRequest(
@@ -108,7 +108,7 @@ export class SupportRequestsService {
         const supportRequest = await this.supportRequestModel
             .findById(supportRequestId)
             .populate('user', 'name')
-            .exec() as any;
+            .exec();
 
         if (!supportRequest || (userRole !== 'client' && supportRequest)) {
             throw new NotFoundException('Support request not found');
@@ -133,11 +133,11 @@ export class SupportRequestsService {
                 id: supportRequest.user._id.toString(),
                 name: supportRequest.user.name,
             }
-        } as any;
+        } as unknown as Message;
     }
 
     async markMessagesAsRead(supportRequestId: string, readBefore: Date): Promise<{ success: true }> {
-        const supportRequest = await this.supportRequestModel.findById(supportRequestId).exec() as any;
+        const supportRequest = await this.supportRequestModel.findById(supportRequestId).exec();
         if (!supportRequest) {
             throw new NotFoundException('Support request not found');
         }
@@ -148,7 +148,7 @@ export class SupportRequestsService {
             }
             return message;
         });
-        console.log(supportRequest)
+
         await supportRequest.save();
         return { success: true };
     }

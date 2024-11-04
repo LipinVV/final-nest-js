@@ -1,6 +1,6 @@
 import { User } from './user.schema';
 
-export interface SearchUserParams {
+interface SearchUserParams {
     limit: number;
     offset: number;
     email?: string;
@@ -8,9 +8,21 @@ export interface SearchUserParams {
     contactPhone?: string;
 }
 
-export interface IUserService {
+interface IUser {
+    _id?: string;
+    email: string;
+    password: string;
+    name: string;
+    role: string;
+    contactPhone?: string;
+    salt?: string;
+}
+
+interface IUserService {
     create(data: Partial<User>): Promise<User>;
     findById(id: string): Promise<User | null>;
     findByEmail(email: string): Promise<User | null>;
     findAll(params: SearchUserParams): Promise<User[]>;
 }
+
+export { IUser, IUserService, SearchUserParams }

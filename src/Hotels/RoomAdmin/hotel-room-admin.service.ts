@@ -15,33 +15,36 @@ export class AdminHotelRoomService {
 
     async createHotelRoom(
         body: CreateHotelRoomDto,
-        images: any,
+        images: { filename: string }[],
     ): Promise<HotelRoom> {
-        const existingHotel = await this.hotelModel.findById(body.hotelId) as any;
-        const imagePaths = images.map(file => `/uploads/${file.filename}`);
+        const existingHotel = await this.hotelModel.findById(body.hotelId) as Hotel;
+        const imagePaths = images.map(file => {
+            return { filename: `/uploads/${file.filename}` };
+        });
         const newHotelRoom = new this.hotelRoomModel({
             hotel: existingHotel,
             images: imagePaths,
         });
 
-        const result = await newHotelRoom.save() as any;
+        const result = await newHotelRoom.save();
+        const resultedHotel = result.hotel;
         return {
             id: result._id,
             description: body.description,
             images: result.images,
             isEnabled: result.isEnabled,
             hotel: {
-                id: result.hotel._id,
+                id: resultedHotel.id,
                 title: result.hotel.title,
                 description: result.hotel.description,
             },
-        } as any;
+        } as HotelRoom;
     }
 
     async updateHotelRoom(
-        roomId: any,
+        roomId: string,
         updateHotelRoomDto: UpdateHotelRoomDto,
-        images: any,
+        images: { filename: string }[],
     ): Promise<HotelRoom> {
         const existingRoom = await this.hotelRoomModel.findById(roomId) as HotelRoom;
         const existingHotel = await this.hotelModel.findById(updateHotelRoomDto.hotelId) as Hotel;
@@ -50,7 +53,9 @@ export class AdminHotelRoomService {
             throw new Error('Hotel room not found');
         }
 
-        const imagePaths = images.map(file => `/uploads/${file.filename}`);
+        const imagePaths = images.map(file => {
+            return { filename: `/uploads/${file.filename}` };
+        });
         existingRoom.description = updateHotelRoomDto.description;
         existingRoom.isEnabled = updateHotelRoomDto.isEnabled;
 
@@ -70,6 +75,6 @@ export class AdminHotelRoomService {
                 title: existingHotel.title,
                 description: existingHotel.description,
             },
-        } as any;
+        } as unknown as HotelRoom;
     }
 }

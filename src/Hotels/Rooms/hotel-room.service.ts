@@ -1,10 +1,10 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { HotelRoom, SearchRoomsParams } from '../hotel.interface';
+import { HotelRoom, SearchRoomsParams, IHotelRoomService, ISearchRoomsParamsFilter } from '../hotel.interface';
 
 @Injectable()
-export class HotelRoomService implements HotelRoomService {
+export class HotelRoomService implements IHotelRoomService {
     constructor(@InjectModel('HotelRoom') private roomModel: Model<HotelRoom>) {}
 
     async create(data: Partial<HotelRoom>): Promise<HotelRoom> {
@@ -24,7 +24,7 @@ export class HotelRoomService implements HotelRoomService {
 
     async search(params: SearchRoomsParams): Promise<HotelRoom[]> {
         const { limit, offset, hotel, isEnabled } = params;
-        const filter: any = { hotel: new Types.ObjectId(hotel) };
+        const filter: ISearchRoomsParamsFilter = { hotel: new Types.ObjectId(hotel).toString() };
         if (typeof isEnabled !== 'undefined') {
             filter.isEnabled = isEnabled;
         }
